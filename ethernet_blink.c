@@ -6,6 +6,10 @@
 #define BLYNK_TEMPLATE_ID           "TMPL2FsxMw0-3"
 #define BLYNK_TEMPLATE_NAME         "Teste"
 #define BLYNK_AUTH_TOKEN            "TUkI8hbMhTZW1-un4wv4peUu7Rjr5ZZY"
+#include <SoftwareSerial.h>
+
+// Configura SoftwareSerial nos pinos 10 e 11
+SoftwareSerial mySerial(10, 11); // RX = pino 10, TX = pino 11
 
 /* Comment this out to disable prints and save space */
 #define BLYNK_PRINT Serial
@@ -60,8 +64,9 @@ void setup()
   // Inicializa a porta serial para debug
   Serial.begin(115200);
 
+  mySerial.begin(9600);
   // Inicializa a Ethernet (DHCP ou IP fixo)
-  Ethernet.begin(mac, ip);  // Para DHCP: Ethernet.begin(mac);
+   // Para DHCP: Ethernet.begin(mac);
   
   // Inicia o Blynk
   Blynk.begin(auth);
@@ -74,4 +79,10 @@ void loop()
 {
   Blynk.run();
   timer.run();
+  if (mySerial.available()) {
+    String receivedData = mySerial.readStringUntil('\n'); // Lê os dados até '\n'
+    if (receivedData == "Desconectado") {
+       Ethernet.begin(mac, ip);  // Envia os dados do potenciômetro
+    }
+  }
 }
