@@ -28,15 +28,15 @@ IPAddress ip(10,77,12,103);  // Ou deixe o DHCP configurar automaticamente
 BlynkTimer timer;
 
 // Pino analógico onde o potenciômetro está conectado
-const int potPin = A0;  // Conecte o potenciômetro ao pino A0 ou outro pino analógico
+int sensorValue = 0;  // Conecte o potenciômetro ao pino A0 ou outro pino analógico
 
 // Função para enviar os dados do potenciômetro para o Blynk
 void sendPotentiometerData()
 {
   // Lê o valor do potenciômetro (0 a 1023)
-  int sensorValue = map(analogRead(potPin),0,1023,0,255);
+ // int sensorValue = map(analogRead(potPin),0,1023,0,255);
 
-  Serial.println(sensorValue);
+  //Serial.println(sensorValue);
   
   // Envia o valor para o pino virtual V1 no Blynk (pode ser ajustado conforme necessidade)
   Blynk.virtualWrite(V1,sensorValue);  // Mapeia o valor de 0-1023 para 0-255, se necessário
@@ -70,7 +70,7 @@ void setup()
   
   // Inicia o Blynk
   Blynk.begin(auth);
-  pinMode(potPin, INPUT);
+ // pinMode(potPin, INPUT);
   // Configura o temporizador para enviar dados do potenciômetro a cada 1 segundo
   timer.setInterval(1000L, myTimerEvent);
 }
@@ -81,8 +81,6 @@ void loop()
   timer.run();
   if (mySerial.available()) {
     String receivedData = mySerial.readStringUntil('\n'); // Lê os dados até '\n'
-    if (receivedData == "Desconectado") {
-       Ethernet.begin(mac, ip);  // Envia os dados do potenciômetro
-    }
+    Serial.println(receivedData);
   }
 }
