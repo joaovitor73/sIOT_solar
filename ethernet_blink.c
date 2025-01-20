@@ -13,8 +13,7 @@
 #include <BlynkSimpleEthernet.h>
 
 // Configura SoftwareSerial nos pinos 10 e 11
-SoftwareSerial mySerial(10, 11); // RX = pino 10, TX = pino 11
-String receivedMessage = "";  // Variable to store the complete message
+String receivedMessage = ""; // Variable to store the complete message
 
 /* Define para habilitar prints para depuração */
 #define BLYNK_PRINT Serial
@@ -27,7 +26,7 @@ unsigned long time;
 char auth[] = BLYNK_AUTH_TOKEN;
 
 // Endereço MAC (use um endereço fixo ou aleatório para o Ethernet Shield)
-byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
 
 // Endereço IP fixo (opcional, pode usar DHCP)
 IPAddress ip(10, 77, 12, 103); // Ajuste conforme sua rede
@@ -39,9 +38,11 @@ BlynkTimer timer;
 int ldrValue = 0;
 
 // Função para enviar os dados do LDR para o Blynk
-void sendLdrDataToBlynk() {
+void sendLdrDataToBlynk()
+{
   // Envia o valor do LDR para o pino virtual V1 no Blynk
-  if(*send_blynk_pointer){
+  if (*send_blynk_pointer)
+  {
     Blynk.virtualWrite(V1, ldrValue);
 
     // Debug no monitor serial
@@ -51,7 +52,8 @@ void sendLdrDataToBlynk() {
 }
 
 // Função chamada toda vez que o dispositivo se conecta ao Blynk.Cloud
-BLYNK_CONNECTED() {
+BLYNK_CONNECTED()
+{
   // Configura propriedades do botão no Blynk
   Blynk.setProperty(V3, "offImageUrl", "https://static-image.nyc3.cdn.digitaloceanspaces.com/general/fte/congratulations.png");
   Blynk.setProperty(V3, "onImageUrl", "https://static-image.nyc3.cdn.digitaloceanspaces.com/general/fte/congratulations_pressed.png");
@@ -59,19 +61,18 @@ BLYNK_CONNECTED() {
 }
 
 // Função de temporizador para enviar dados a cada 1 segundo
-void myTimerEvent() {
+void myTimerEvent()
+{
   sendLdrDataToBlynk(); // Envia os dados do LDR
 }
 
-void setup() {
+void setup()
+{
   // Inicializa a porta serial para depuração
-  Serial.begin(9600);
-
-  // Inicializa o SoftwareSerial
-  mySerial.begin(9600);
+  Serial.begin(115200);
 
   // Inicializa o Blynk
-  // Blynk.begin(auth, mac, ip);
+  Blynk.begin(auth);
 
   // Executa o Blynk
   Serial.println("Blynk iniciado");
@@ -82,18 +83,23 @@ void setup() {
   time = millis();
 }
 
-void loop() {
+void loop()
+{
   // Executa o Blynk
   Blynk.run();
 
   // Executa o temporizador
   timer.run();
   // Verifica se há dados recebidos via UART
-   if (mySerial.available()) {
-    String receivedData = mySerial.readStringUntil('\n'); // Lê os dados até '\n'
+  if (Serial.available())
+  {
+    String receivedData = Serial.readStringUntil('\n'); // Lê os dados até '\n'
     ldrValue = receivedData.toInt();
     send_blynk = true;
-  }else if (millis() - time > 1000){
+    Serial.println(ldrValue);
+  }
+  else if (millis() - time > 1000)
+  {
     send_blynk = false;
     time = millis();
   }
