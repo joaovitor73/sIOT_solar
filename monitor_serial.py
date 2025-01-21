@@ -3,7 +3,7 @@ import numpy
 import matplotlib.pyplot as plt
 from drawnow import *
 luminosidade = []
-conexao = serial.Serial('com3', 115200)
+conexao = serial.Serial('com10', 115200)
 plt.ion()
 cont = 0
 def makeFig(): 
@@ -16,15 +16,19 @@ def makeFig():
 while True:
     while (conexao.inWaiting()==0):
         pass 
-    arduinoString = conexao.readline().decode('utf-8')
 
-    dataArray = arduinoString.split(' , ')
+    try:
+        arduinoString = conexao.readline().decode('utf-8')
 
-    ldr = float(dataArray[0]) 
-    luminosidade.append(ldr)
-    drawnow(makeFig)
-    cont = cont +1
+        dataArray = arduinoString.split(' , ')
 
-    if(cont > 50):
-        luminosidade.pop(0)
+        ldr = float(dataArray[0]) 
+        luminosidade.append(ldr)
+        drawnow(makeFig)
+        cont = cont +1
+
+        if(cont > 50):
+            luminosidade.pop(0)
+    except:
+        pass
 

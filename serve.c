@@ -36,6 +36,7 @@ void sendSensor()
   }
   else
   {
+    Serial.println(Blynk.connected());
     // Envia os dados via UART para o Arduino
     Serial.print("Sending to Arduino via UART: ");
     Serial.println(value_send);
@@ -63,16 +64,16 @@ void setup()
   // Conecta ao Blynk e Wi-Fi
   Serial.println("Connecting to Wi-Fi...");
 
-  WiFi.mode(WIFI_STA);
+  WiFi.mode(WIFI_AP_STA);
   WiFi.persistent(false);
   WiFi.setAutoReconnect(true);
-  WiFi.begin(ssid, pass);
+  // WiFi.begin(ssid, pass);
 
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    blynk_connect = true;
-    Blynk.begin(auth, ssid, pass);
-  }
+  // if (WiFi.status() == WL_CONNECTED)
+  // {
+  //   blynk_connect = true;
+  //   Blynk.begin(auth, ssid, pass);
+  // }
 
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK)

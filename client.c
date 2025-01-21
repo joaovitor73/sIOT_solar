@@ -6,7 +6,6 @@ const byte ldrpin = 34; // Pino de leitura do LDR
 void sendData(int valueToSend)
 {
   esp_err_t result = esp_now_send(gatewayAddress, (uint8_t *)&valueToSend, sizeof(valueToSend));
- 
 }
 
 void setup()
@@ -18,11 +17,9 @@ void setup()
   // Inicializar ESP-NOW
   if (esp_now_init() != ESP_OK)
   {
-    
+
     return;
   }
-
-
 
   // Adicionar o ESP Principal como peer
   esp_now_peer_info_t peerInfo;
@@ -46,5 +43,5 @@ void loop()
   // Exibir no Monitor Serial o valor mapeado
   Serial.println(mappedValue);
 
-  delay(500);
+  delay(5000);
 }
