@@ -2,6 +2,7 @@ import serial
 import matplotlib.pyplot as plt
 from drawnow import *
 from threading import Thread, Lock
+from datetime import datetime
 
 luminosidade = []
 conexao = serial.Serial('com10', 115200)
@@ -19,23 +20,25 @@ def makeFig():
 
 def read_from_arduino():
     global cont
-    with open('luminosidade.txt', 'w') as file:
-        while True:
+    fileName = f'luminosidade_{datetime.today().strftime("%Y-%m-%d_%H-%M-%S")}.txt'
+    while True:
             try:
                 if conexao.in_waiting > 0:
                     arduinoString = conexao.readline().decode('utf-8').strip()
-                    dataArray = arduinoString.split(' , ')
+                    dataArray = arduinoString.split(': ')
                     print(dataArray)
                     if 'connecting' not in arduinoString:
                         ldr = float(dataArray[0])
                         
                         with data_lock:
                             luminosidade.append(ldr)
+                            # Salva os dados no arquivo
+                            with open(fileName, "a") as file:
+                                file.write(f"{ldr}\n")
+                                file.close()
                             if len(luminosidade) > 50:
                                 luminosidade.pop(0)
                             
-                            # Salva os dados no arquivo
-                            file.write(f"{ldr}\n")
             except Exception as e:
                 print(f"Erro na leitura: {e}")
 
