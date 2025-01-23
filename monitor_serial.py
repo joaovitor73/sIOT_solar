@@ -19,21 +19,25 @@ def makeFig():
 
 def read_from_arduino():
     global cont
-    while True:
-        try:
-            if conexao.in_waiting > 0:
-                arduinoString = conexao.readline().decode('utf-8').strip()
-                dataArray = arduinoString.split(' , ')
-                print(dataArray)
-                if 'connecting' not in arduinoString:
-                    ldr = float(dataArray[0])
-                    
-                    with data_lock:
-                        luminosidade.append(ldr)
-                        if len(luminosidade) > 50:
-                            luminosidade.pop(0)
-        except Exception as e:
-            print(f"Erro na leitura: {e}")
+    with open('luminosidade.txt', 'w') as file:
+        while True:
+            try:
+                if conexao.in_waiting > 0:
+                    arduinoString = conexao.readline().decode('utf-8').strip()
+                    dataArray = arduinoString.split(' , ')
+                    print(dataArray)
+                    if 'connecting' not in arduinoString:
+                        ldr = float(dataArray[0])
+                        
+                        with data_lock:
+                            luminosidade.append(ldr)
+                            if len(luminosidade) > 50:
+                                luminosidade.pop(0)
+                            
+                            # Salva os dados no arquivo
+                            file.write(f"{ldr}\n")
+            except Exception as e:
+                print(f"Erro na leitura: {e}")
 
 thread = Thread(target=read_from_arduino, daemon=True)
 thread.start()
