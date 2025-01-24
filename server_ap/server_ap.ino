@@ -43,5 +43,5 @@ void loop()
   // Exibir no Monitor Serial o valor mapeado
   Serial.println(mappedValue);
 
-  delay(100);
+  delay(1000);
 }
