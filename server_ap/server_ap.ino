@@ -10,9 +10,6 @@ char auth[] = BLYNK_AUTH_TOKEN;
 char ssid[] = "A";
 char pass[] = "12345678";
 
-const char *ssid_esp = "ESP32_AP"; // Nome da rede criada pelo ESP32 (AP)
-const char *pass_esp = "12345678"; // Senha da rede criada pelo ESP32 (AP)
-
 bool blynk_connect = false;
 BlynkTimer timer;
 unsigned long temp;
@@ -34,7 +31,7 @@ void sendSensor()
     // Envia o valor para o Blynk (Virtual Pin V1)
     // Serial.print("LDR Value sent to Blynk: ");
     // Serial.println(value_send);
-    Serial.println("Envie para o blynk");
+    Serial.println("Server envie para o blynk");
     SerialPort.println("1");
     if(SerialPort.available()){
       String receivedValue = SerialPort.readStringUntil('\n');
@@ -47,7 +44,7 @@ void sendSensor()
   {
     // Envia os dados via UART para o Arduino
     // Serial.print("Sending to Arduino via UART: ");
-    Serial.println("Envie para arduino");
+    Serial.println("Server envie para arduino");
     SerialPort.println("0");
   }
 }

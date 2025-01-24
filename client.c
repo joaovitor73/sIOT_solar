@@ -1,8 +1,7 @@
 #include <esp_now.h>
 #include <WiFi.h>
-uint8_t gatewayAddress[] = {0x3C, 0x71, 0xBF, 0x4F, 0xC0, 0xF4};
+uint8_t gatewayAddress[] = {0x3C, 0x71, 0xBF, 0x4F, 0xC3, 0x5C};
 const byte ldrpin = 34; // Pino de leitura do LDR
-
 void sendData(int valueToSend)
 {
   esp_err_t result = esp_now_send(gatewayAddress, (uint8_t *)&valueToSend, sizeof(valueToSend));
@@ -43,5 +42,5 @@ void loop()
   // Exibir no Monitor Serial o valor mapeado
   Serial.println(mappedValue);
 
-  delay(100);
+  delay(1000);
 }

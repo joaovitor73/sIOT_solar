@@ -3,9 +3,9 @@
 #define BLYNK_AUTH_TOKEN "TUkI8hbMhTZW1-un4wv4peUu7Rjr5ZZY"
 
 #define BLYNK_PRINT Serial
-#include <esp_now.h>
 #include <WiFi.h>
 #include <BlynkSimpleEsp32.h>
+
 char auth[] = BLYNK_AUTH_TOKEN;
 char ssid[] = "A";
 char pass[] = "12345678";
@@ -14,12 +14,12 @@ bool blynk_connect = false;
 BlynkTimer timer;
 unsigned long temp;
 unsigned long temp_reconnect = 0;
-unsigned long tem_send_sensor = 0;
+
+#define LDR_PIN 34
 
 HardwareSerial SerialPort(2);
-int cont = 0;
 int ldrValue = 0;
-volatile int value_send = 0;
+
 void sendSensor()
 {
   // cont += 1;
@@ -29,33 +29,29 @@ void sendSensor()
   if (WiFi.status() == WL_CONNECTED && Blynk.connected())
   {
     // Envia o valor para o Blynk (Virtual Pin V1)
-    Blynk.virtualWrite(V1, value_send);
-
-    Serial.print("LDR Value sent to Blynk: ");
-    Serial.println(value_send);
+    // Serial.print("LDR Value sent to Blynk: ");
+    // Serial.println(value_send);
+    Serial.println("Server envie para o blynk");
+    SerialPort.println("1");
+    if (SerialPort.available())
+    {
+      String receivedValue = SerialPort.readStringUntil('\n');
+      ldrValue = receivedValue.toInt();
+      Serial.println(ldrValue);
+      Blynk.virtualWrite(V1, ldrValue);
+    }
   }
   else
   {
-    Serial.println(Blynk.connected());
     // Envia os dados via UART para o Arduino
-    Serial.print("Sending to Arduino via UART: ");
-    Serial.println(value_send);
-    SerialPort.println(value_send);
-  }
-}
-
-void onDataRecv(const esp_now_recv_info *info, const uint8_t *data, int len)
-{
-  if (len == sizeof(int))
-  {
-    memcpy(&ldrValue, data, sizeof(ldrValue));
-    value_send = ldrValue;
+    // Serial.print("Sending to Arduino via UART: ");
+    Serial.println("Server envie para arduino");
+    SerialPort.println("0");
   }
 }
 
 void setup()
 {
-
   Serial.begin(115200); // Inicializa o monitor serial
   Serial.println("Starting ESP32...");
 
@@ -64,28 +60,20 @@ void setup()
   // Conecta ao Blynk e Wi-Fi
   Serial.println("Connecting to Wi-Fi...");
 
-  WiFi.mode(WIFI_AP_STA);
-  WiFi.persistent(false);
-  WiFi.setAutoReconnect(true);
-  // WiFi.begin(ssid, pass);
+  WiFi.mode(WIFI_STA);
+  WiFi.persistent(false);      // Impede que o ESP32 salve credenciais na memória flash
+  WiFi.setAutoReconnect(true); // Habilita a reconexão automática
+  WiFi.begin(ssid, pass);      // Inicia a conexão Wi-Fi
 
-  // if (WiFi.status() == WL_CONNECTED)
-  // {
-  //   blynk_connect = true;
-  //   Blynk.begin(auth, ssid, pass);
-  // }
-
-  // Init ESP-NOW
-  if (esp_now_init() != ESP_OK)
+  if (WiFi.status() == WL_CONNECTED)
   {
-    Serial.println("Error initializing ESP-NOW");
-    return;
+    blynk_connect = true;
+    Blynk.begin(auth, ssid, pass);
   }
 
-  Serial.print(F("Receiver initialized : "));
-  Serial.println(WiFi.macAddress());
+  // Configura o timer para enviar os dados a cada 1 segundo (1000ms)
+  timer.setInterval(1000L, sendSensor);
 
-  esp_now_register_recv_cb(onDataRecv);
   Serial.println("ESP32 setup completed.");
 
   Serial.println("\nConectado à rede Wi-Fi!");
@@ -93,7 +81,6 @@ void setup()
   Serial.println(WiFi.localIP());
   temp = millis();
   temp_reconnect = millis();
-  tem_send_sensor = millis();
 }
 
 void loop()
@@ -107,6 +94,9 @@ void loop()
   {
     blynk_connect = false;
   }
+
+  // Executa o timer independentemente da conexão
+  timer.run();
 
   if (!blynk_connect && WiFi.status() == WL_CONNECTED)
   {
@@ -124,11 +114,5 @@ void loop()
       WiFi.reconnect();
     }
     temp_reconnect = temp;
-  }
-
-  if (millis() - tem_send_sensor > 1000)
-  {
-    sendSensor();
-    tem_send_sensor = millis();
   }
 }

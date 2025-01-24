@@ -17,19 +17,20 @@ void sendSensor()
     // Leitura do valor analógico do LDR
     // ldrValue = cont;
     // Verifica se está conectado ao Wi-Fi e ao Blynk
-    if (WiFi.status() == WL_CONNECTED)
+    if (SerialPort.available())
     {
-        // Envia o valor para o Blynk (Virtual Pin V1)
-
-        Serial.print("LDR Value sent to Blynk: ");
-        Serial.println(value_send);
-    }
-    else
-    {
-        // Envia os dados via UART para o Arduino
-        Serial.print("Sending to Arduino via UART: ");
-        Serial.println(value_send);
-        SerialPort.println(value_send);
+        String valor = SerialPort.readStringUntil('\n');
+        int op = valor.toInt();
+        if (op == 1)
+        {
+            // Envia o valor para o gateway
+            SerialPort.println(value_send);
+        }
+        else if (op == 0)
+        {
+            // Envia os dados via UART para o Arduino
+            Serial.println(value_send);
+        }
     }
 }
 
