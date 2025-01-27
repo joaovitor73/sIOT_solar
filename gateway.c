@@ -21,12 +21,7 @@ void sendSensor()
     {
         String valor = SerialPort.readStringUntil('\n');
         int op = valor.toInt();
-        if (op == 1)
-        {
-            // Envia o valor para o gateway
-            SerialPort.println(value_send);
-        }
-        else if (op == 0)
+        if (op == 0)
         {
             // Envia os dados via UART para o Arduino
             Serial.println(value_send);
@@ -40,6 +35,7 @@ void onDataRecv(const esp_now_recv_info *info, const uint8_t *data, int len)
     {
         memcpy(&ldrValue, data, sizeof(ldrValue));
         value_send = ldrValue;
+        SerialPort.println(value_send);
     }
 }
 

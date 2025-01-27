@@ -33,7 +33,8 @@ void sendSensor()
     // Serial.println(value_send);
     Serial.println("Server envie para o blynk");
     SerialPort.println("1");
-    if(SerialPort.available()){
+    if (SerialPort.available())
+    {
       String receivedValue = SerialPort.readStringUntil('\n');
       ldrValue = receivedValue.toInt();
       Serial.println(ldrValue);
@@ -46,9 +47,15 @@ void sendSensor()
     // Serial.print("Sending to Arduino via UART: ");
     Serial.println("Server envie para arduino");
     SerialPort.println("0");
+    
+  if (SerialPort.available())
+  {
+    String receivedValue = SerialPort.readStringUntil('\n');
+    ldrValue = receivedValue.toInt();
+    Serial.println(ldrValue);
+  }
   }
 }
-
 
 void setup()
 {

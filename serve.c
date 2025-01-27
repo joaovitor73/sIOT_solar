@@ -115,4 +115,11 @@ void loop()
     }
     temp_reconnect = temp;
   }
+
+  if (SerialPort.available())
+  {
+    String receivedValue = SerialPort.readStringUntil('\n');
+    ldrValue = receivedValue.toInt();
+    Serial.println(ldrValue);
+  }
 }
