@@ -47,6 +47,13 @@ void sendSensor()
     // Serial.print("Sending to Arduino via UART: ");
     Serial.println("Server envie para arduino");
     SerialPort.println("0");
+
+    if (SerialPort.available())
+    {
+      String receivedValue = SerialPort.readStringUntil('\n');
+      ldrValue = receivedValue.toInt();
+      Serial.println(ldrValue);
+    }
   }
 }
 
@@ -114,12 +121,5 @@ void loop()
       WiFi.reconnect();
     }
     temp_reconnect = temp;
-  }
-
-  if (SerialPort.available())
-  {
-    String receivedValue = SerialPort.readStringUntil('\n');
-    ldrValue = receivedValue.toInt();
-    Serial.println(ldrValue);
   }
 }
