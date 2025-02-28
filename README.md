@@ -1,6 +1,5 @@
 ## sIOT_solar
 
-Sistema de Monitoramento com LDR, ESP32 e Arduino
 Este projeto consiste em um sistema de monitoramento que utiliza um sensor LDR (Light Dependent Resistor) para medir a luminosidade em uma área externa. Os dados coletados são enviados via Wi-Fi para um ESP32 no laboratório, que os repassa para um Arduino via comunicação serial. Uma aplicação desktop consome esses dados, exibe gráficos em tempo real e salva os dados em arquivos .txt. Além disso, os dados são enviados para a plataforma IoT Blynk, com fallback para conexão Ethernet em caso de falha na Wi-Fi.
 
 ## Componentes Utilizados
